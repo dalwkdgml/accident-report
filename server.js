@@ -71,10 +71,6 @@ app.post('/api/auth/signup', async (req, res) => {
   if (typeof office_name !== 'string' || !office_name.trim()) {
     return res.status(400).json({ error: '영업소를 선택해주세요.' });
   }
-  const { rows: officeRows } = await pool.query(
-    'SELECT o.name AS office_name FROM offices o WHERE o.name = $1', [office_name.trim()]
-  );
-  if (!officeRows[0]) return res.status(400).json({ error: '등록된 영업소를 선택해주세요.' });
   const salt = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(password, salt);
   try {

@@ -69,23 +69,16 @@ const $loginForm = document.getElementById('loginForm');
 const $loginError = document.getElementById('loginError');
 const $loginButton = document.getElementById('loginButton');
 const $authToggle = document.getElementById('authToggle');
+const $signupScreen = document.getElementById('signupScreen');
+const $signupForm = document.getElementById('signupForm');
+const $signupError = document.getElementById('signupError');
+const $signupButton = document.getElementById('signupButton');
 const $approvalPanel = document.getElementById('approvalPanel');
 const $approvalList = document.getElementById('approvalList');
 const $notificationButton = document.getElementById('enableNotifications');
 const $signupOfficeField = document.getElementById('signupOfficeField');
-const $signupOffice = document.getElementById('signupOffice');
+const $signupOffice = document.getElementById('loginSignupOffice');
 let authMode = 'login';
-
-async function loadSignupOffices() {
-  try {
-    const offices = await api('/auth/offices');
-    $signupOffice.innerHTML = '<option value="">영업소 선택</option>' + offices.map(office =>
-      `<option value="${esc(office.office_name)}">${esc(office.branch_name)} / ${esc(office.office_name)}</option>`
-    ).join('');
-  } catch (e) {
-    $loginError.textContent = '영업소 목록을 불러오지 못했습니다.';
-  }
-}
 
 function showLogin() {
   $authScreen.classList.add('open');
@@ -203,14 +196,39 @@ $loginForm.addEventListener('submit', async (ev) => {
 });
 
 $authToggle.addEventListener('click', () => {
-  authMode = authMode === 'login' ? 'signup' : 'login';
-  $signupOfficeField.hidden = authMode !== 'signup';
-  $signupOffice.required = authMode === 'signup';
-  $loginButton.textContent = authMode === 'login' ? '로그인' : '회원가입';
-  $authToggle.textContent = authMode === 'login' ? '회원가입' : '로그인으로 돌아가기';
-  $loginError.textContent = authMode === 'signup' ? '아이디는 영문, 숫자, ., _, -를 사용하세요.' : '';
-  $loginPassword.value = '';
-  if (authMode === 'signup') loadSignupOffices();
+  $signupScreen.classList.add('open');
+  document.getElementById('signupUsername').focus();
+});
+
+document.getElementById('closeSignup').addEventListener('click', () => $signupScreen.classList.remove('open'));
+$signupScreen.addEventListener('click', (ev) => {
+  if (ev.target === $signupScreen) $signupScreen.classList.remove('open');
+});
+
+$signupForm.addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  $signupButton.disabled = true;
+  $signupButton.textContent = '신청 중...';
+  $signupError.textContent = '';
+  try {
+    await api('/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('signupUsername').value.trim(),
+        password: document.getElementById('signupPassword').value,
+        office_name: document.getElementById('signupOffice').value.trim(),
+      }),
+    });
+    $signupForm.reset();
+    $signupScreen.classList.remove('open');
+    $loginError.textContent = '가입 신청이 완료되었습니다. 승인 후 로그인해주세요.';
+  } catch (e) {
+    $signupError.textContent = e.message;
+  } finally {
+    $signupButton.disabled = false;
+    $signupButton.textContent = '가입 신청';
+  }
 });
 
 document.getElementById('logoutButton').addEventListener('click', async () => {

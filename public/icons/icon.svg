@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="0" y="0" width="100" height="100" rx="22" fill="#1B2A4A"/>
+  <!-- 365일 순환 링 (상단에 게이트가 들어갈 틈) -->
+  <path d="M56.07,23.69 A27,27 0 1 1 43.93,23.69"
+        fill="none" stroke="#FBF7EE" stroke-width="10" stroke-linecap="round"/>
+  <!-- 톨게이트 (통과 지점, 오렌지 포인트 컬러) -->
+  <path d="M43.93,23.69 L43.93,16.69 M56.07,23.69 L56.07,16.69 M41.5,16.69 L58.5,16.69"
+        fill="none" stroke="#E8631C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,9 @@
+node_modules/
+db.json
+public/uploads/
+tunnel.log
+server.log
+*.png
+!public/icons/*.png
+!manual/assets/**/*.png
+.env

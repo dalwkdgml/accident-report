@@ -40,6 +40,18 @@ body { margin: 0; }
 .auth-error { min-height: 20px; padding-top: 10px; color: var(--red); font-size: 12.5px; }
 .auth-toggle { display: block; width: 100%; margin-top: 12px; padding: 8px; background: none; border: none; color: var(--indigo); font-size: 13px; cursor: pointer; }
 .auth-locked { visibility: hidden; }
+.signup-screen {
+  display: none; position: fixed; inset: 0; z-index: 310; align-items: center; justify-content: center;
+  background: rgba(8,27,61,.58); padding: 24px;
+}
+.signup-screen.open { display: flex; }
+.signup-panel { position: relative; width: min(100%, 380px); padding: 30px 32px; border-radius: 16px; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.24); }
+.signup-close { position: absolute; top: 14px; right: 14px; border: none; background: none; color: var(--text-muted); font-size: 17px; cursor: pointer; }
+.signup-panel h2 { margin: 18px 0 4px; color: var(--text); font-size: 22px; }
+.signup-panel > p { margin: 0 0 20px; color: var(--text-muted); font-size: 13px; }
+.signup-panel label { display: block; margin: 12px 0 6px; color: var(--text); font-size: 13px; font-weight: 600; }
+.signup-panel input, .signup-panel select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font: inherit; }
+.signup-panel input:focus, .signup-panel select:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(0,125,194,.15); }
 .approval-panel {
   display: none; position: fixed; right: 24px; bottom: 24px; z-index: 120; width: min(440px, calc(100vw - 32px));
   padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: #fff;
