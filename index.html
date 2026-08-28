@@ -27,12 +27,30 @@
       <label for="loginPassword">비밀번호</label>
       <input id="loginPassword" type="password" autocomplete="current-password" required>
       <div id="signupOfficeField" hidden>
-        <label for="signupOffice">영업소</label>
-        <select id="signupOffice"><option value="">영업소 선택</option></select>
+        <label for="loginSignupOffice">영업소</label>
+        <select id="loginSignupOffice"><option value="">영업소 선택</option></select>
       </div>
       <div class="auth-error" id="loginError" role="alert"></div>
       <button class="btn btn-primary btn-block" type="submit" id="loginButton">로그인</button>
       <button class="auth-toggle" id="authToggle" type="button">회원가입</button>
+    </form>
+  </div>
+</div>
+<div class="signup-screen" id="signupScreen">
+  <div class="signup-panel">
+    <button class="signup-close" id="closeSignup" type="button" aria-label="회원가입 창 닫기">✕</button>
+    <div class="auth-mark">EX</div>
+    <h2>회원가입</h2>
+    <p>영업소별 담당 계정을 신청해주세요.</p>
+    <form id="signupForm">
+      <label for="signupUsername">아이디</label>
+      <input id="signupUsername" type="text" autocomplete="username" required>
+      <label for="signupPassword">비밀번호</label>
+      <input id="signupPassword" type="password" autocomplete="new-password" minlength="8" required>
+      <label for="signupOffice">영업소</label>
+      <input id="signupOffice" type="text" placeholder="영업소명을 직접 입력" autocomplete="organization" required>
+      <div class="auth-error" id="signupError" role="alert"></div>
+      <button class="btn btn-primary btn-block" type="submit" id="signupButton">가입 신청</button>
     </form>
   </div>
 </div>
@@ -80,6 +98,7 @@
         <div class="breadcrumb" id="breadcrumb">홈 <span class="sep">/</span> <span class="muted">오늘의 현황</span></div>
       </div>
       <div class="topbar-actions">
+        <button class="approval-btn" id="approvalButton" type="button" hidden>가입 승인 <span id="approvalCount" hidden>0</span></button>
         <button class="notification-btn" id="enableNotifications" type="button">알림 켜기</button>
         <button class="btn btn-primary" id="openRegisterModal">+ 보고서 등록</button>
       </div>
