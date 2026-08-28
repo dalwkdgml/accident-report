@@ -72,7 +72,20 @@ const $authToggle = document.getElementById('authToggle');
 const $approvalPanel = document.getElementById('approvalPanel');
 const $approvalList = document.getElementById('approvalList');
 const $notificationButton = document.getElementById('enableNotifications');
+const $signupOfficeField = document.getElementById('signupOfficeField');
+const $signupOffice = document.getElementById('signupOffice');
 let authMode = 'login';
+
+async function loadSignupOffices() {
+  try {
+    const offices = await api('/auth/offices');
+    $signupOffice.innerHTML = '<option value="">영업소 선택</option>' + offices.map(office =>
+      `<option value="${esc(office.office_name)}">${esc(office.branch_name)} / ${esc(office.office_name)}</option>`
+    ).join('');
+  } catch (e) {
+    $loginError.textContent = '영업소 목록을 불러오지 못했습니다.';
+  }
+}
 
 function showLogin() {
   $authScreen.classList.add('open');
@@ -129,7 +142,7 @@ async function loadApprovalRequests() {
     }
     $approvalList.innerHTML = users.map(user => `
       <div class="approval-row">
-        <div><strong>${esc(user.username)}</strong><span>신청 ${esc(user.created_at)}</span></div>
+        <div><strong>${esc(user.username)}</strong><span>${esc(user.office_name)} · 신청 ${esc(user.created_at)}</span></div>
         <div class="approval-actions">
           <button type="button" class="approve" data-user-id="${user.id}" data-status="approved">승인</button>
           <button type="button" class="reject" data-user-id="${user.id}" data-status="rejected">거절</button>
@@ -167,7 +180,7 @@ $loginForm.addEventListener('submit', async (ev) => {
     await api(authMode === 'login' ? '/auth/login' : '/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, office_name: $signupOffice.value }),
     });
     if (authMode === 'signup') {
       authMode = 'login';
@@ -191,10 +204,13 @@ $loginForm.addEventListener('submit', async (ev) => {
 
 $authToggle.addEventListener('click', () => {
   authMode = authMode === 'login' ? 'signup' : 'login';
+  $signupOfficeField.hidden = authMode !== 'signup';
+  $signupOffice.required = authMode === 'signup';
   $loginButton.textContent = authMode === 'login' ? '로그인' : '회원가입';
   $authToggle.textContent = authMode === 'login' ? '회원가입' : '로그인으로 돌아가기';
   $loginError.textContent = authMode === 'signup' ? '아이디는 영문, 숫자, ., _, -를 사용하세요.' : '';
   $loginPassword.value = '';
+  if (authMode === 'signup') loadSignupOffices();
 });
 
 document.getElementById('logoutButton').addEventListener('click', async () => {

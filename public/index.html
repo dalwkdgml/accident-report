@@ -26,6 +26,10 @@
       <input id="loginUsername" type="text" autocomplete="username" required>
       <label for="loginPassword">비밀번호</label>
       <input id="loginPassword" type="password" autocomplete="current-password" required>
+      <div id="signupOfficeField" hidden>
+        <label for="signupOffice">영업소</label>
+        <select id="signupOffice"><option value="">영업소 선택</option></select>
+      </div>
       <div class="auth-error" id="loginError" role="alert"></div>
       <button class="btn btn-primary btn-block" type="submit" id="loginButton">로그인</button>
       <button class="auth-toggle" id="authToggle" type="button">회원가입</button>
