@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   username TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   password_salt TEXT NOT NULL,
+  office_name TEXT NOT NULL DEFAULT '',
   status TEXT NOT NULL DEFAULT 'pending',
   approved_by TEXT NOT NULL DEFAULT '',
   approved_at TEXT,
@@ -26,7 +27,9 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS approved_by TEXT NOT NULL DEFAULT '';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS approved_at TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS office_name TEXT NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_office_unique ON users(office_name) WHERE office_name <> '';
 
 CREATE TABLE IF NOT EXISTS action_log (
   id SERIAL PRIMARY KEY,

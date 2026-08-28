@@ -61,23 +61,30 @@ function hashPassword(password, salt) {
 }
 
 app.post('/api/auth/signup', async (req, res) => {
-  const { username, password } = req.body || {};
+  const { username, password, office_name } = req.body || {};
   if (!/^[a-zA-Z0-9._-]{4,30}$/.test(username || '')) {
     return res.status(400).json({ error: '아이디는 영문, 숫자, ., _, -를 사용해 4~30자로 입력해주세요.' });
   }
   if (typeof password !== 'string' || password.length < 8 || password.length > 100) {
     return res.status(400).json({ error: '비밀번호는 8~100자로 입력해주세요.' });
   }
+  if (typeof office_name !== 'string' || !office_name.trim()) {
+    return res.status(400).json({ error: '영업소를 선택해주세요.' });
+  }
+  const { rows: officeRows } = await pool.query(
+    'SELECT o.name AS office_name FROM offices o WHERE o.name = $1', [office_name.trim()]
+  );
+  if (!officeRows[0]) return res.status(400).json({ error: '등록된 영업소를 선택해주세요.' });
   const salt = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(password, salt);
   try {
     const { rows } = await pool.query(
-      'INSERT INTO users (username, password_hash, password_salt, status, created_at) VALUES ($1,$2,$3,$4,$5) RETURNING id, username, status, created_at',
-      [username, passwordHash, salt, 'pending', nowKST()]
+      'INSERT INTO users (username, password_hash, password_salt, office_name, status, created_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, username, office_name, status, created_at',
+      [username, passwordHash, salt, office_name.trim(), 'pending', nowKST()]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
-    if (err.code === '23505') return res.status(409).json({ error: '이미 사용 중인 아이디입니다.' });
+    if (err.code === '23505') return res.status(409).json({ error: err.constraint === 'idx_users_office_unique' ? '해당 영업소는 이미 가입 신청이 있습니다.' : '이미 사용 중인 아이디입니다.' });
     throw err;
   }
 });
@@ -89,7 +96,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
   let valid = Boolean(ADMIN_USERNAME && ADMIN_PASSWORD && username === ADMIN_USERNAME && password === ADMIN_PASSWORD);
   if (!valid) {
-    const { rows } = await pool.query('SELECT password_hash, password_salt, status FROM users WHERE username = $1', [username]);
+    const { rows } = await pool.query('SELECT password_hash, password_salt, office_name, status FROM users WHERE username = $1', [username]);
     if (rows[0]) {
       const actual = hashPassword(password || '', rows[0].password_salt);
       valid = crypto.timingSafeEqual(Buffer.from(actual), Buffer.from(rows[0].password_hash));
@@ -108,7 +115,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/pending-users', requireAuth, requireApprover, async (req, res) => {
   const { rows } = await pool.query(
-    "SELECT id, username, created_at FROM users WHERE status = 'pending' ORDER BY id ASC"
+    "SELECT id, username, office_name, created_at FROM users WHERE status = 'pending' ORDER BY id ASC"
   );
   res.json(rows);
 });
@@ -135,6 +142,13 @@ app.get('/api/auth/me', (req, res) => {
   const session = readSession(req);
   if (!session) return res.status(401).json({ error: '로그인이 필요합니다.' });
   res.json({ username: session.username });
+});
+
+app.get('/api/auth/offices', async (req, res) => {
+  const { rows } = await pool.query(
+    'SELECT b.name AS branch_name, o.name AS office_name FROM offices o JOIN branches b ON b.id = o.branch_id ORDER BY b.id, o.id'
+  );
+  res.json(rows);
 });
 
 app.use('/api', (req, res, next) => {
