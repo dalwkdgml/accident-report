@@ -64,6 +64,7 @@ body { margin: 0; }
 .approval-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
 .approval-row strong { display: block; color: var(--text); font-size: 13px; }
 .approval-row span { display: block; margin-top: 3px; color: var(--text-muted); font-size: 11px; }
+.approval-empty { padding: 14px 0 4px; color: var(--text-muted); font-size: 13px; text-align: center; }
 .approval-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .approval-actions button { padding: 6px 9px; border: 0; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer; }
 .approval-actions .approve { background: #16834b; }
@@ -161,6 +162,9 @@ button { font-family: inherit; cursor: pointer; }
   position: sticky; top: 0; z-index: 5;
 }
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
+.approval-btn { padding: 8px 10px; border: 1px solid #f2c36b; border-radius: 8px; background: #fff9ed; color: #9a5b00; font-size: 12px; font-weight: 700; cursor: pointer; }
+.approval-btn:hover { border-color: #d99a28; background: #fff3d6; }
+.approval-btn span { display: inline-flex; min-width: 18px; height: 18px; align-items: center; justify-content: center; margin-left: 3px; border-radius: 999px; background: #e08a00; color: #fff; font-size: 11px; }
 .notification-btn { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-muted); font-size: 12px; cursor: pointer; }
 .notification-btn:hover { border-color: var(--indigo); color: var(--indigo); }
 .notification-btn:disabled { cursor: default; color: #16834b; border-color: #b7dec9; background: #f1faf5; }

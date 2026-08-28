@@ -75,6 +75,8 @@ const $signupError = document.getElementById('signupError');
 const $signupButton = document.getElementById('signupButton');
 const $approvalPanel = document.getElementById('approvalPanel');
 const $approvalList = document.getElementById('approvalList');
+const $approvalButton = document.getElementById('approvalButton');
+const $approvalCount = document.getElementById('approvalCount');
 const $notificationButton = document.getElementById('enableNotifications');
 const $signupOfficeField = document.getElementById('signupOfficeField');
 const $signupOffice = document.getElementById('loginSignupOffice');
@@ -129,8 +131,11 @@ updateNotificationButton();
 async function loadApprovalRequests() {
   try {
     const users = await api('/auth/pending-users');
+    $approvalButton.hidden = false;
+    $approvalCount.textContent = users.length;
+    $approvalCount.hidden = !users.length;
     if (!users.length) {
-      $approvalPanel.classList.remove('open');
+      $approvalList.innerHTML = '<div class="approval-empty">현재 가입 승인 대기자가 없습니다.</div>';
       return;
     }
     $approvalList.innerHTML = users.map(user => `
@@ -156,11 +161,16 @@ async function loadApprovalRequests() {
       });
     });
   } catch (e) {
+    $approvalButton.hidden = true;
     $approvalPanel.classList.remove('open');
   }
 }
 
 document.getElementById('closeApprovalPanel').addEventListener('click', () => $approvalPanel.classList.remove('open'));
+$approvalButton.addEventListener('click', () => {
+  $approvalPanel.classList.add('open');
+  loadApprovalRequests();
+});
 
 $loginForm.addEventListener('submit', async (ev) => {
   ev.preventDefault();
