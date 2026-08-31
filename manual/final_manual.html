@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Toll-Pass 365 모바일 앱 이용자 설명서</title>
+<style>
+  @page { size: 13.333in 7.5in; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif; color:#1c2530; }
+
+  .slide {
+    width:13.333in; height:7.5in; position:relative; background:#fff;
+    page-break-after:always; overflow:hidden;
+  }
+  .slide:last-child { page-break-after:auto; }
+
+  .headerbar {
+    position:absolute; top:0; left:0; right:0; height:0.56in; background:#00238e;
+    color:#fff; display:flex; align-items:center; justify-content:space-between;
+    padding:0 0.45in; font-size:19px; font-weight:700; letter-spacing:.2px;
+  }
+  .headerbar .pg { font-size:13px; font-weight:400; opacity:.75; }
+
+  /* ============ COVER ============ */
+  .cover-topline { position:absolute; top:0.32in; left:0.55in; font-size:11px; color:#8a97a6; letter-spacing:.3px; }
+  .cover-band {
+    position:absolute; top:1.55in; left:0; right:0; height:3.35in; background:#00238e;
+    display:flex; align-items:center; justify-content:space-between; padding:0 0.65in;
+  }
+  .cover-band .left { color:#fff; }
+  .cover-band .left .eyebrow {
+    font-size:16px; color:#fff; border-bottom:2px solid rgba(255,255,255,.55);
+    padding-bottom:9px; display:inline-block; margin-bottom:14px; letter-spacing:.5px; font-weight:600;
+  }
+  .cover-band .left h1 { font-size:24px; margin:0; font-weight:400; color:#d8e6f7; line-height:1.5; }
+  .cover-band .right { display:flex; align-items:center; gap:18px; }
+  .cover-band .right img { width:110px; height:110px; border-radius:24px; box-shadow:0 8px 22px rgba(0,0,0,.3); }
+  .cover-band .right .wordmark { color:#fff; font-size:28px; font-weight:800; letter-spacing:.3px; white-space:nowrap; text-align:right; }
+  .cover-band .right .wordmark .sub { display:block; font-size:14px; font-weight:400; color:#d8e6f7; margin-top:4px; letter-spacing:0; }
+
+  .cover-bottom {
+    position:absolute; bottom:0.55in; left:0.65in; right:0.65in;
+    display:flex; justify-content:space-between; align-items:flex-end;
+  }
+  .cover-bottom .brandrow { display:flex; align-items:center; gap:12px; }
+  .cover-bottom .brandrow .ic { width:40px; height:40px; border-radius:10px; }
+  .cover-bottom .brandrow .txt { font-size:20px; font-weight:800; color:#00238e; }
+  .cover-bottom .brandrow .txt .en { font-size:12px; font-weight:400; color:#5a6b7d; margin-left:4px; }
+  .cover-bottom .brandrow .txt .sub { display:block; font-size:10px; font-weight:400; color:#8a97a6; }
+  .cover-bottom .rightcta { display:flex; align-items:center; gap:14px; }
+  .cover-bottom .rightcta img { width:78px; height:78px; border:1px solid #e3e9ef; border-radius:8px; padding:4px; }
+  .cover-bottom .rightcta .u { text-align:right; }
+  .cover-bottom .rightcta .u .big { font-size:22px; font-weight:900; color:#eb2333; }
+  .cover-bottom .rightcta .u .small { font-size:11px; color:#667; margin-top:2px; }
+
+  /* ============ INDEX ============ */
+  .toc-wrap { position:absolute; top:1.1in; left:1.1in; right:1.1in; bottom:0.6in; }
+  .toc-wrap ol { list-style:none; margin:0; padding:0; border-left:3px solid #7fb8e0; }
+  .toc-wrap li {
+    font-size:19px; padding:11px 0 11px 30px; color:#1c2530; display:flex; gap:14px; align-items:baseline;
+  }
+  .toc-wrap li b { color:#007dc2; font-size:19px; width:22px; display:inline-block; }
+
+  /* ============ GENERIC CONTENT ============ */
+  .body-area { position:absolute; top:0.56in; left:0; right:0; bottom:0; }
+
+  .cols4 { display:flex; justify-content:center; align-items:flex-start; padding:0.55in 0.4in 0; gap:0.05in; height:100%; }
+  .col { flex:0 0 2.55in; text-align:center; padding-top:0.15in; }
+  .col h3 { font-size:15px; color:#007dc2; border-bottom:2px solid #007dc2; display:inline-block; padding-bottom:5px; margin:0 0 10px; font-weight:700; }
+  .col p { font-size:11.5px; color:#33404d; margin:0 0 12px; line-height:1.5; min-height:44px; padding:0 4px; }
+  .col img { width:190px; border-radius:4px; }
+  .arrow { flex:0 0 0.35in; font-size:24px; color:#eb2333; padding-top:2.6in; text-align:center; }
+
+  .notebox {
+    position:absolute; left:0.6in; right:0.6in; bottom:0.35in;
+    background:#fdf1f1; border:1px solid #f6d3d6; border-left:4px solid #eb2333;
+    border-radius:6px; padding:10px 16px; font-size:12px; color:#7a1c26;
+    display:flex; align-items:center; gap:16px;
+  }
+  .notebox b { color:#eb2333; }
+  .notebox .txt2 { flex:1; }
+  .notebox .qrmini { flex-shrink:0; text-align:center; }
+  .notebox .qrmini img { width:0.72in; height:0.72in; border:1px solid #f0c4c8; border-radius:6px; background:#fff; padding:3px; display:block; }
+  .notebox .qrmini .cap { font-size:8px; color:#7a1c26; margin-top:3px; font-weight:700; white-space:nowrap; }
+
+  .split { position:absolute; top:0.85in; left:0.6in; right:0.6in; bottom:0.5in; display:flex; gap:0.55in; }
+  .shotcol { flex:0 0 auto; position:relative; }
+  .shotcol img { width:236px; border:7px solid #1c1c1c; border-radius:26px; box-shadow:0 8px 20px rgba(0,0,0,.25); display:block; }
+  .callout {
+    position:absolute; width:24px; height:24px; border-radius:50%; background:#eb2333; color:#fff;
+    font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 3px #fff, 0 2px 6px rgba(0,0,0,.4); transform:translate(-50%,-50%);
+  }
+  .listcol { flex:1; padding-top:0.25in; }
+  .listcol .li-item { display:flex; gap:14px; margin-bottom:22px; align-items:flex-start; }
+  .listcol .badge {
+    width:28px; height:28px; border-radius:50%; background:#eb2333; color:#fff; font-weight:800;
+    font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .listcol .txt { font-size:14.5px; line-height:1.6; padding-top:2px; }
+  .listcol .txt b { color:#00238e; }
+
+  .intro-body { position:absolute; top:0.9in; left:0.75in; right:0.75in; bottom:0.5in; }
+  .intro-body p { font-size:16px; line-height:1.75; margin:0 0 14px; }
+  .intro-body .hero {
+    font-size:21px; font-weight:800; color:#00238e; margin:0 0 20px;
+    padding-bottom:12px; border-bottom:3px solid #007dc2; display:inline-block;
+  }
+  .intro-body .infobox {
+    background:#f3f8fc; border:1px solid #cfe4f2; border-left:4px solid #007dc2; border-radius:6px;
+    padding:14px 18px; margin:16px 0; font-size:15px;
+  }
+  .intro-body ul { font-size:15px; line-height:1.9; margin:8px 0; padding-left:20px; }
+  .intro-body b { color:#00238e; }
+</style>
+</head>
+<body>
+
+<!-- ================= SLIDE 0: COVER ================= -->
+<section class="slide">
+  <div class="cover-topline">톨-패스 365(Toll-Pass 365) &nbsp;·&nbsp; 영업소 · 지사 · 본부 · 자회사 공용</div>
+  <div class="cover-band">
+    <div class="left">
+      <div class="eyebrow">톨-패스 365(Toll-Pass 365) 공용</div>
+      <h1>모바일 앱<br>설치 및 사용 설명서</h1>
+    </div>
+    <div class="right">
+      <img src="assets/icon.png">
+      <div class="wordmark">톨-패스 365<span class="sub">(Toll-Pass 365)</span></div>
+    </div>
+  </div>
+  <div class="cover-bottom">
+    <div class="brandrow">
+      <img class="ic" src="assets/icon.png">
+      <div class="txt">톨-패스 365<span class="en">(Toll-Pass 365)</span><span class="sub">한국도로공사 영업소 사고 · 안전 데이터 공유 플랫폼</span></div>
+    </div>
+    <div class="rightcta">
+      <div class="u">
+        <div class="small">QR코드를 스캔하면 바로 접속됩니다</div>
+        <div class="big">tkrhqhrh.onrender.com</div>
+      </div>
+      <img src="assets/qr.png">
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 1: 차례 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>차례</span><span class="pg">2</span></div>
+  <div class="toc-wrap">
+    <ol>
+      <li><b>1.</b> 시스템 소개 및 접속 방법</li>
+      <li><b>2.</b> 앱 설치 — 안드로이드 (Chrome)</li>
+      <li><b>3.</b> 앱 설치 — 아이폰 (Safari)</li>
+      <li><b>4.</b> 홈 화면 사용법</li>
+      <li><b>5.</b> 사고 등록</li>
+      <li><b>6.</b> 조치결과 확인 (칸반보드)</li>
+      <li><b>7.</b> 조치결과 상세 및 처리</li>
+      <li><b>8.</b> 사고분석</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= SLIDE 2: 소개 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>1. 시스템 소개 및 접속 방법</span><span class="pg">3</span></div>
+  <div class="intro-body">
+    <p class="hero">365일 신속한 영업소 사고 상황 공유 &amp; 안전 데이터 플랫폼</p>
+    <p>톨-패스 365(Toll-Pass 365)는 스마트폰 브라우저에서 바로 사용할 수 있는 웹 앱입니다.<br>별도의 스토어 설치 없이 <b>홈 화면에 추가</b>하면 일반 앱처럼 아이콘을 눌러 바로 실행할 수 있습니다.</p>
+    <p>영업소 · 지사 · 본부 · 자회사 모든 곳이 <b>동일한 화면에서 사고 상황을 등록하고 서로 확인</b>하는, 수평적인 정보 공유 플랫폼입니다.<br>별도의 로그인 절차 없이 소속(지사/영업소)만 선택하면 바로 사고를 등록하고 확인할 수 있습니다.</p>
+    <div class="infobox">
+      <b>접속 주소</b> https://tkrhqhrh.onrender.com<br>
+      표지의 QR코드를 스캔하거나, 스마트폰 브라우저 주소창에 위 주소를 직접 입력해도 됩니다.
+    </div>
+    <ul>
+      <li><b>홈</b> — 사고 현황 요약, 공지사항, 사고 캘린더 확인</li>
+      <li><b>사고등록</b> — 발생한 사고를 사진과 함께 등록</li>
+      <li><b>조치결과</b> — 상태별(사고접수·검토중·완료) 칸반보드로 진행상황을 확인하고 처리</li>
+      <li><b>사고분석</b> — 사고 통계와 추이를 그래프로 확인</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SLIDE 3: 설치 - 안드로이드 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>2. 앱 설치 — 안드로이드 (Chrome)</span><span class="pg">4</span></div>
+  <div class="cols4">
+    <div class="col">
+      <h3>1. 접속</h3>
+      <p>QR코드를 스캔하거나 Chrome 주소창에 주소를 입력해 접속합니다.</p>
+      <img src="assets/install/a1.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>2. 메뉴 열기</h3>
+      <p>화면 오른쪽 위 점 3개(⋮) 메뉴에서 <b>"홈 화면에 추가"</b>를 선택합니다.</p>
+      <img src="assets/install/a2.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>3. 설치</h3>
+      <p>안내 창에서 <b>"설치"</b>를 터치합니다.</p>
+      <img src="assets/install/a3.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>4. 실행</h3>
+      <p>홈 화면에 생긴 아이콘을 눌러 실행합니다.</p>
+      <img src="assets/install/a4.png">
+    </div>
+  </div>
+  <div class="notebox">
+    <div class="txt2"><b>주의</b> 카카오톡 · 문자 메시지 링크를 바로 눌러 열면 인앱 브라우저로 열려 "홈 화면에 추가"가 보이지 않을 수 있습니다. 오른쪽 위 메뉴에서 <b>"다른 브라우저로 열기"</b>를 선택한 뒤 위 순서를 진행하세요.</div>
+    <div class="qrmini"><img src="assets/qr.png"><div class="cap">QR 스캔 후 접속</div></div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 4: 설치 - 아이폰 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>3. 앱 설치 — 아이폰 (Safari)</span><span class="pg">5</span></div>
+  <div class="cols4">
+    <div class="col">
+      <h3>1. 접속</h3>
+      <p>QR코드를 스캔하거나 Safari 주소창에 주소를 입력해 접속합니다.</p>
+      <img src="assets/install/i1.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>2. 공유 메뉴</h3>
+      <p>화면 하단 공유 아이콘(⬆︎)을 눌러 메뉴를 아래로 내립니다.</p>
+      <img src="assets/install/i2.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>3. 홈 화면에 추가</h3>
+      <p>"홈 화면에 추가"를 선택하고 오른쪽 위 <b>"추가"</b>를 누릅니다.</p>
+      <img src="assets/install/i3.png">
+    </div>
+    <div class="arrow">▶</div>
+    <div class="col">
+      <h3>4. 실행</h3>
+      <p>홈 화면에 생긴 아이콘을 눌러 실행합니다.</p>
+      <img src="assets/install/i4.png">
+    </div>
+  </div>
+  <div class="notebox">
+    <div class="txt2"><b>주의</b> 반드시 <b>Safari</b>에서 진행해야 합니다. 카카오톡 인앱 브라우저에서는 공유 메뉴에 "홈 화면에 추가"가 나타나지 않으니, 오른쪽 위 메뉴에서 <b>"Safari로 열기"</b>를 선택한 뒤 진행하세요.</div>
+    <div class="qrmini"><img src="assets/qr.png"><div class="cap">QR 스캔 후 접속</div></div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 5: 홈 화면 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>4. 홈 화면 사용법</span><span class="pg">6</span></div>
+  <div class="split">
+    <div class="shotcol">
+      <img src="assets/home.png">
+      <div class="callout" style="left:36px; top:68px;">1</div>
+      <div class="callout" style="left:10px; top:158px;">2</div>
+      <div class="callout" style="left:206px; top:257px;">3</div>
+      <div class="callout" style="left:73px; top:330px;">4</div>
+    </div>
+    <div class="listcol">
+      <div class="li-item"><div class="badge">1</div><div class="txt"><b>사고 현황 카드</b> — 전체 사고 · 사고접수 · 검토중 · 완료 · 완료율을 한눈에 확인합니다. 좌우로 넘겨 더 볼 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">2</div><div class="txt"><b>공지사항</b> — 본부 · 지사의 안내 사항을 확인합니다.</div></div>
+      <div class="li-item"><div class="badge">3</div><div class="txt"><b>+ 버튼</b> — 누르면 선택한 날짜가 자동으로 채워진 사고등록 화면으로 이동합니다.</div></div>
+      <div class="li-item"><div class="badge">4</div><div class="txt"><b>캘린더</b> — 사고가 있는 날짜는 빨간 점으로 표시됩니다. 날짜를 누르면 하단에 해당일 사고 목록이 나타납니다.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 6: 사고등록 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>5. 사고 등록</span><span class="pg">7</span></div>
+  <div class="split">
+    <div class="shotcol">
+      <img src="assets/register.png">
+      <div class="callout" style="left:37px; top:133px;">1</div>
+      <div class="callout" style="left:37px; top:298px;">2</div>
+      <div class="callout" style="left:28px; top:416px;">3</div>
+    </div>
+    <div class="listcol">
+      <div class="li-item"><div class="badge">1</div><div class="txt"><b>지사 → 영업소</b> — 지사를 먼저 선택하면 소속 영업소 목록이 자동으로 나타납니다.</div></div>
+      <div class="li-item"><div class="badge">2</div><div class="txt"><b>사고 유형</b> — 교통사고 · 시설물파손 · 기기이상 · 부상자 발생 · 기타 중 선택합니다.</div></div>
+      <div class="li-item"><div class="badge">3</div><div class="txt"><b>사진 첨부</b> — +사진추가로 현장 사진을 여러 장 첨부할 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">✓</div><div class="txt">사고 일시 · 등록자 · 사고 내용까지 모두 입력한 뒤, 화면 아래 <b>등록하기</b> 버튼을 누르면 저장되며 자동으로 <b>조치결과</b> 화면으로 이동합니다.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 7: 조치결과 확인 (칸반보드) ================= -->
+<section class="slide">
+  <div class="headerbar"><span>6. 조치결과 확인 (칸반보드)</span><span class="pg">8</span></div>
+  <div class="split">
+    <div class="shotcol">
+      <img src="assets/status.png">
+      <div class="callout" style="left:9px; top:38px;">1</div>
+      <div class="callout" style="left:14px; top:103px;">2</div>
+    </div>
+    <div class="listcol">
+      <div class="li-item"><div class="badge">1</div><div class="txt"><b>상태 탭</b> — 사고접수 · 검토중 · 완료 탭을 눌러 화면을 전환합니다. PC에서는 3개 열이 나란히 보이고, 모바일에서는 한 번에 한 열씩 탭으로 전환해서 봅니다.</div></div>
+      <div class="li-item"><div class="badge">2</div><div class="txt"><b>사고 카드</b> — 카드를 누르면 조치결과 상세 화면(다음 페이지)으로 이동합니다. 카드 오른쪽 위 아이콘을 누르면 사고 등록 정보만 바로 볼 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">✓</div><div class="txt">영업소 간 사고 진행상황을 빠르게 확인하고 공유하기 위한 화면입니다. 상태 변경은 카드를 열어 상세 화면에서만 할 수 있습니다.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 8: 조치결과 상세 및 처리 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>7. 조치결과 상세 및 처리</span><span class="pg">9</span></div>
+  <div class="split">
+    <div class="shotcol">
+      <img src="assets/action_detail.png">
+      <div class="callout" style="left:200px; top:105px;">1</div>
+      <div class="callout" style="left:31px; top:390px;">2</div>
+    </div>
+    <div class="shotcol">
+      <img src="assets/action_detail_bottom.png">
+      <div class="callout" style="left:31px; top:156px;">3</div>
+      <div class="callout" style="left:37px; top:425px;">4</div>
+    </div>
+    <div class="listcol">
+      <div class="li-item"><div class="badge">1</div><div class="txt"><b>수정</b> — 등록된 사고 일시 · 장소 · 등록자 · 유형 · 내용을 고칠 수 있습니다. 수정 시 수정자 이름을 입력해야 하며, "최종 수정" 정보가 함께 남습니다.</div></div>
+      <div class="li-item"><div class="badge">2</div><div class="txt"><b>조치 내용</b> — 진행 중 조치한 내용을 자유롭게 입력해 기록으로 남깁니다.</div></div>
+      <div class="li-item"><div class="badge">3</div><div class="txt"><b>관계자 의견</b> — 본부 · 자회사 등 관계자가 작성자 · 소속과 함께 의견을 남길 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">4</div><div class="txt"><b>처리 상태</b> — 사고접수 · 검토중 · 완료 버튼을 눌러 진행상황을 바꿉니다. 조치결과 목록 화면에도 바로 반영됩니다.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 9: 사고분석 ================= -->
+<section class="slide">
+  <div class="headerbar"><span>8. 사고분석</span><span class="pg">10</span></div>
+  <div class="split">
+    <div class="shotcol">
+      <img src="assets/analytics.png">
+      <div class="callout" style="left:36px; top:65px;">1</div>
+      <div class="callout" style="left:27px; top:154px;">2</div>
+    </div>
+    <div class="listcol">
+      <div class="li-item"><div class="badge">1</div><div class="txt"><b>요약 카드</b> — 무사고 경과일, 최장 미처리 사고, 최다 사고 장소 · 유형, 완료율, 평균 월 사고까지 총 6개 지표를 좌우로 넘겨 확인합니다.</div></div>
+      <div class="li-item"><div class="badge">2</div><div class="txt"><b>월별 사고 건수 추이</b> — 그래프로 사고 발생 경향을 파악할 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">·</div><div class="txt">아래로 스크롤하면 <b>사고 유형별 분포</b>(도넛), <b>장소별 사고 건수 Top 10</b>, <b>요일별 사고 분포</b> 차트를 추가로 확인할 수 있습니다.</div></div>
+      <div class="li-item"><div class="badge">·</div><div class="txt">하단 <b>"사고분석"</b> 탭에서 확인합니다.</div></div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

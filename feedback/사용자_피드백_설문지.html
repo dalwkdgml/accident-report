@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>톨-패스(Toll-Pass)365 설문지</title>
+<style>
+  :root {
+    --indigo: #007dc2;
+    --indigo-dark: #00238e;
+    --red: #eb2333;
+    --border: #d7dbe3;
+    --text: #111827;
+    --text-muted: #5b6472;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    color: var(--text);
+    margin: 0;
+    background: #f2f4f8;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 16px auto;
+    background: #fff;
+    padding: 10mm 14mm 6mm;
+    box-shadow: 0 2px 14px rgba(17,24,39,.12);
+  }
+  .header {
+    background: linear-gradient(135deg, var(--indigo), var(--indigo-dark));
+    color: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 6mm;
+    text-align: center;
+  }
+  .header .brand { font-size: 20px; font-weight: 800; }
+
+  .section { margin-bottom: 5mm; }
+  .section-title {
+    font-size: 14px; font-weight: 700; color: var(--indigo-dark);
+    border-left: 4px solid var(--indigo); padding-left: 8px; margin-bottom: 8px;
+  }
+
+  .box { width: 12px; height: 12px; border: 1.4px solid #9aa3b2; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+  table.rating {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  table.rating th, table.rating td {
+    border: 1px solid var(--border); padding: 5px 6px; text-align: center;
+  }
+  table.rating th { background: #f5f7fb; color: var(--text-muted); font-weight: 700; font-size: 11px; }
+  table.rating td:first-child { text-align: left; font-weight: 600; padding-left: 10px; }
+  .scale-hint { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; }
+
+  .statement-list { font-size: 12.5px; }
+  .statement-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 4px; border-bottom: 1px dashed var(--border);
+  }
+  .statement-row:last-child { border-bottom: none; }
+  .statement-scale { display: flex; gap: 10px; }
+  .statement-scale .box-num { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9.5px; color: var(--text-muted); }
+
+  .open-item { margin-bottom: 6px; }
+  .open-item label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
+  .open-lines { border: 1px solid var(--border); border-radius: 6px; min-height: 15mm; padding: 6px 8px;
+    background:
+      repeating-linear-gradient(#fff, #fff 6mm, #eef0f4 6mm, #eef0f4 calc(6mm + 1px));
+  }
+
+  .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2mm; font-size: 11.5px; color: var(--text-muted); }
+  .footer-row .thanks { font-size: 12.5px; color: var(--text); font-weight: 600; }
+
+  .section, .open-item, table.rating, .statement-row, .header {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; width: auto; min-height: auto; }
+    @page { size: A4; margin: 10mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="brand">톨-패스(Toll-Pass)365 설문지</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">1. 기능별 만족도</div>
+    <table class="rating">
+      <thead>
+        <tr><th style="text-align:left; padding-left:10px;">기능</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>사고등록 (신규 사고 보고서 작성)</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td></tr>
+        <tr><td>조치결과 (진행상황 확인·관리)</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td></tr>
+        <tr><td>사고분석 (통계·차트)</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td></tr>
+        <tr><td>홈 화면 (대시보드)</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td></tr>
+        <tr><td>검색 기능</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td><td>&#9633;</td></tr>
+      </tbody>
+    </table>
+    <div class="scale-hint">※ 1 = 매우 불편함 &nbsp;·&nbsp; 3 = 보통 &nbsp;·&nbsp; 5 = 매우 편리함</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">2. 다음 항목에 대해 얼마나 동의하십니까?</div>
+    <div class="statement-list">
+      <div class="statement-row">
+        <div>앱 사용법이 직관적이어서 별도 설명 없이도 이용할 수 있다</div>
+        <div class="statement-scale">
+          <span class="box-num"><span class="box"></span>1</span><span class="box-num"><span class="box"></span>2</span><span class="box-num"><span class="box"></span>3</span><span class="box-num"><span class="box"></span>4</span><span class="box-num"><span class="box"></span>5</span>
+        </div>
+      </div>
+      <div class="statement-row">
+        <div>필요한 사고 정보를 빠르게 찾을 수 있다</div>
+        <div class="statement-scale">
+          <span class="box-num"><span class="box"></span>1</span><span class="box-num"><span class="box"></span>2</span><span class="box-num"><span class="box"></span>3</span><span class="box-num"><span class="box"></span>4</span><span class="box-num"><span class="box"></span>5</span>
+        </div>
+      </div>
+      <div class="statement-row">
+        <div>사고 등록 절차(사진 첨부 포함)가 간편하다</div>
+        <div class="statement-scale">
+          <span class="box-num"><span class="box"></span>1</span><span class="box-num"><span class="box"></span>2</span><span class="box-num"><span class="box"></span>3</span><span class="box-num"><span class="box"></span>4</span><span class="box-num"><span class="box"></span>5</span>
+        </div>
+      </div>
+      <div class="statement-row">
+        <div>스마트폰 화면에서 글자/버튼 크기 등이 보기 편하다</div>
+        <div class="statement-scale">
+          <span class="box-num"><span class="box"></span>1</span><span class="box-num"><span class="box"></span>2</span><span class="box-num"><span class="box"></span>3</span><span class="box-num"><span class="box"></span>4</span><span class="box-num"><span class="box"></span>5</span>
+        </div>
+      </div>
+    </div>
+    <div class="scale-hint">※ 1 = 전혀 그렇지 않다 &nbsp;·&nbsp; 5 = 매우 그렇다</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">3. 자유 의견</div>
+    <div class="open-item">
+      <label>① 사용하면서 불편했던 점</label>
+      <div class="open-lines" style="min-height: 30mm;"></div>
+    </div>
+    <div class="open-item">
+      <label>② 추가되었으면 하는 기능</label>
+      <div class="open-lines" style="min-height: 30mm;"></div>
+    </div>
+  </div>
+
+  <div class="footer-row">
+    <div class="thanks">소중한 의견 감사드립니다.</div>
+    <div>작성일 &nbsp;2026년 &nbsp;____월 &nbsp;____일</div>
+  </div>
+
+</div>
+</body>
+</html>

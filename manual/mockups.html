@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { margin:0; padding:20px; background:#dfe3e7; font-family: "Malgun Gothic", sans-serif; }
+  .frame-wrap { display:inline-block; margin:10px; vertical-align:top; }
+  .phone {
+    width:230px; height:490px;
+    border:7px solid #1c1c1c; border-radius:26px;
+    overflow:hidden; background:#fff; position:relative;
+    box-shadow:0 6px 16px rgba(0,0,0,.22);
+  }
+  .statusbar {
+    height:20px; background:#fff; display:flex; justify-content:space-between; align-items:center;
+    font-size:9px; font-weight:600; padding:0 12px; color:#111;
+  }
+  .statusbar .icons { display:flex; gap:3px; align-items:center; }
+  .statusbar .bar { width:3px; background:#111; border-radius:1px; }
+
+  /* Android browser bar */
+  .browserbar {
+    height:32px; background:#eef0f2; display:flex; align-items:center; padding:0 8px; gap:7px;
+    border-bottom:1px solid #d8dce0;
+  }
+  .browserbar .lock { font-size:9px; color:#5f6368; }
+  .browserbar .url {
+    flex:1; background:#fff; border-radius:14px; padding:5px 9px; font-size:9px; color:#3c4043;
+    border:1px solid #dfe1e5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .browserbar .dots { font-size:13px; font-weight:900; color:#5f6368; letter-spacing:1px; padding:2px 5px; }
+
+  /* iOS Safari bar */
+  .safaribar-top {
+    height:26px; background:#f7f7f8; display:flex; align-items:center; justify-content:center; gap:6px;
+    border-bottom:1px solid #e2e2e4;
+  }
+  .safaribar-top .url { font-size:9px; color:#3c4043; }
+  .safaribar-bottom {
+    position:absolute; bottom:0; left:0; right:0; height:38px; background:#f7f7f8;
+    display:flex; align-items:center; justify-content:space-around;
+    border-top:1px solid #e2e2e4; font-size:14px; color:#8a8a8e;
+  }
+
+  .content {
+    position:relative; height:calc(100% - 20px);
+    background-size: 230px auto; background-position: top center; background-repeat:no-repeat;
+    background-color:#f4f7fa;
+  }
+  .bg-home { background-image:url('assets/home.png'); }
+
+  .redcircle {
+    position:absolute; border:3px solid #eb2333; border-radius:50%;
+    box-shadow:0 0 0 2px rgba(235,34,51,0.15);
+  }
+  .redbox {
+    position:absolute; border:2.5px solid #eb2333; border-radius:6px;
+    background:rgba(235,34,51,0.06);
+  }
+  .redarrow { position:absolute; font-size:20px; color:#eb2333; }
+
+  /* dropdown menu (android) */
+  .menu-card {
+    position:absolute; top:34px; right:6px; width:150px; background:#fff; border-radius:8px;
+    box-shadow:0 3px 10px rgba(0,0,0,.28); font-size:9.5px; color:#222; overflow:hidden;
+    border:1px solid #e6e6e6;
+  }
+  .menu-card .item { padding:7px 10px; border-bottom:1px solid #f1f1f1; }
+  .menu-card .item.hl { background:#fdeceec; color:#c81c2c; font-weight:700; background:#fdecec; }
+  .dim { position:absolute; inset:0; background:rgba(0,0,0,0.15); }
+
+  /* install dialog */
+  .dialog-card {
+    position:absolute; left:14px; right:14px; top:120px; background:#fff; border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,.3); padding:14px; text-align:center;
+  }
+  .dialog-card .appicon { width:38px; height:38px; border-radius:9px; margin:0 auto 8px; background:url('assets/icon.png') center/cover; }
+  .dialog-card .name { font-size:11px; font-weight:700; color:#111; margin-bottom:2px; }
+  .dialog-card .url2 { font-size:8.5px; color:#888; margin-bottom:12px; }
+  .dialog-card .btnrow { display:flex; gap:8px; }
+  .dialog-card .btn { flex:1; padding:7px 0; border-radius:7px; font-size:10px; font-weight:700; }
+  .dialog-card .btn.cancel { background:#eee; color:#555; }
+  .dialog-card .btn.ok { background:#eb2333; color:#fff; }
+
+  /* iOS share sheet */
+  .sheet {
+    position:absolute; left:0; right:0; bottom:0; height:290px; background:#fff;
+    border-radius:14px 14px 0 0; box-shadow:0 -4px 14px rgba(0,0,0,.25); padding:10px 12px;
+  }
+  .sheet .handle { width:32px; height:4px; background:#ddd; border-radius:2px; margin:2px auto 8px; }
+  .sheet .rowicons { display:flex; gap:8px; padding-bottom:10px; border-bottom:1px solid #eee; margin-bottom:6px; }
+  .sheet .rowicons .ic { width:34px; height:34px; border-radius:9px; background:#eef0f2; flex-shrink:0; }
+  .sheet .item { display:flex; align-items:center; gap:8px; padding:7px 2px; font-size:10px; color:#222; border-bottom:1px solid #f4f4f4; }
+  .sheet .item .ic2 { width:20px; height:20px; border-radius:5px; background:#eee; flex-shrink:0; }
+  .sheet .item.hl { color:#c81c2c; font-weight:700; }
+  .sheet .item.hl .ic2 { background:#fdecec; border:1.5px solid #eb2333; }
+
+  /* iOS add dialog */
+  .ios-dialog {
+    position:absolute; left:14px; right:14px; top:150px; background:#f2f2f4; border-radius:14px; overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.3);
+  }
+  .ios-dialog .head { display:flex; justify-content:space-between; padding:8px 12px; font-size:10px; border-bottom:1px solid #e0e0e2; background:#f8f8fa; }
+  .ios-dialog .head .add { color:#eb2333; font-weight:700; }
+  .ios-dialog .body2 { display:flex; align-items:center; gap:8px; padding:12px; }
+  .ios-dialog .appicon2 { width:34px; height:34px; border-radius:8px; background:url('assets/icon.png') center/cover; }
+  .ios-dialog .txt .n { font-size:10.5px; font-weight:700; color:#111; }
+  .ios-dialog .txt .u { font-size:8.5px; color:#888; }
+
+  /* home screen grid */
+  .homegrid { padding:18px 14px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .homegrid .icon { width:38px; height:38px; border-radius:10px; background:#c9ced3; margin:0 auto; }
+  .homegrid .cell { text-align:center; }
+  .homegrid .cell .label { font-size:7.5px; color:#333; margin-top:3px; }
+  .homegrid .cell.real .icon { background:url('assets/icon.png') center/cover; border-radius:10px; }
+</style>
+</head>
+<body>
+
+<!-- ===== ANDROID STEP 1: address bar + menu dots highlighted ===== -->
+<div class="frame-wrap"><div class="phone" id="a1">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="browserbar">
+    <span class="lock">🔒</span>
+    <span class="url">tkrhqhrh.onrender.com</span>
+    <span class="dots">⋮</span>
+  </div>
+  <div class="content bg-home"></div>
+  <div class="redcircle" style="width:30px;height:30px;top:23px;right:2px;"></div>
+</div></div>
+
+<!-- ===== ANDROID STEP 2: dropdown menu ===== -->
+<div class="frame-wrap"><div class="phone" id="a2">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="browserbar">
+    <span class="lock">🔒</span>
+    <span class="url">tkrhqhrh.onrender.com</span>
+    <span class="dots">⋮</span>
+  </div>
+  <div class="content bg-home">
+    <div class="dim"></div>
+    <div class="menu-card">
+      <div class="item">새 탭</div>
+      <div class="item">즐겨찾기</div>
+      <div class="item">다운로드</div>
+      <div class="item hl">📲 홈 화면에 추가</div>
+      <div class="item">데스크톱 사이트</div>
+      <div class="item">설정</div>
+    </div>
+  </div>
+  <div class="redbox" style="top:166px;right:11px;width:132px;height:24px;"></div>
+</div></div>
+
+<!-- ===== ANDROID STEP 3: install dialog ===== -->
+<div class="frame-wrap"><div class="phone" id="a3">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="browserbar">
+    <span class="lock">🔒</span>
+    <span class="url">tkrhqhrh.onrender.com</span>
+    <span class="dots">⋮</span>
+  </div>
+  <div class="content bg-home">
+    <div class="dim"></div>
+    <div class="dialog-card">
+      <div class="appicon"></div>
+      <div class="name">Toll-Pass 365 설치</div>
+      <div class="url2">tkrhqhrh.onrender.com</div>
+      <div class="btnrow">
+        <div class="btn cancel">취소</div>
+        <div class="btn ok">설치</div>
+      </div>
+    </div>
+  </div>
+  <div class="redbox" style="top:273px;left:114px;width:100px;height:30px;"></div>
+</div></div>
+
+<!-- ===== ANDROID STEP 4: home screen ===== -->
+<div class="frame-wrap"><div class="phone" id="a4">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="content" style="background:#e9edf1;">
+    <div class="homegrid">
+      <div class="cell"><div class="icon"></div><div class="label">전화</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">문자</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">카메라</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">설정</div></div>
+      <div class="cell real"><div class="icon"></div><div class="label">Toll-Pass<br>365</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">지도</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">캘린더</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">갤러리</div></div>
+    </div>
+  </div>
+  <div class="redcircle" style="width:50px;height:50px;top:100px;left:9px;"></div>
+</div></div>
+
+<!-- ===== iOS STEP 1: safari share icon ===== -->
+<div class="frame-wrap"><div class="phone" id="i1">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="safaribar-top"><span class="url">🔒 tkrhqhrh.onrender.com</span></div>
+  <div class="content bg-home" style="height:calc(100% - 46px - 38px);"></div>
+  <div class="safaribar-bottom"><span>◀</span><span>▶</span><span>⬆︎</span><span>▤</span><span>▢</span></div>
+  <div class="redcircle" style="width:30px;height:30px;bottom:4px;left:100px;"></div>
+</div></div>
+
+<!-- ===== iOS STEP 2: share sheet ===== -->
+<div class="frame-wrap"><div class="phone" id="i2">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="safaribar-top"><span class="url">🔒 tkrhqhrh.onrender.com</span></div>
+  <div class="content bg-home" style="height:calc(100% - 46px);">
+    <div class="dim"></div>
+    <div class="sheet">
+      <div class="handle"></div>
+      <div class="rowicons">
+        <div class="ic"></div><div class="ic"></div><div class="ic"></div><div class="ic"></div>
+      </div>
+      <div class="item"><div class="ic2"></div>즐겨찾기에 추가</div>
+      <div class="item hl"><div class="ic2">➕</div>홈 화면에 추가</div>
+      <div class="item"><div class="ic2"></div>리딩 리스트에 추가</div>
+      <div class="item"><div class="ic2"></div>마크업</div>
+      <div class="item"><div class="ic2"></div>프린트</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ===== iOS STEP 3: add dialog ===== -->
+<div class="frame-wrap"><div class="phone" id="i3">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="safaribar-top"><span class="url">🔒 tkrhqhrh.onrender.com</span></div>
+  <div class="content bg-home" style="height:calc(100% - 46px);">
+    <div class="dim"></div>
+    <div class="ios-dialog">
+      <div class="head"><span>취소</span><span>홈 화면에 추가</span><span class="add">추가</span></div>
+      <div class="body2">
+        <div class="appicon2"></div>
+        <div class="txt"><div class="n">Toll-Pass 365</div><div class="u">tkrhqhrh.onrender.com</div></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ===== iOS STEP 4: home screen ===== -->
+<div class="frame-wrap"><div class="phone" id="i4">
+  <div class="statusbar"><span>9:41</span><span class="icons"><span class="bar" style="height:6px"></span><span class="bar" style="height:8px"></span><span class="bar" style="height:10px"></span></span></div>
+  <div class="content" style="background:#e9edf1;">
+    <div class="homegrid">
+      <div class="cell"><div class="icon"></div><div class="label">전화</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">문자</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">카메라</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">설정</div></div>
+      <div class="cell real"><div class="icon"></div><div class="label">Toll-Pass<br>365</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">지도</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">캘린더</div></div>
+      <div class="cell"><div class="icon"></div><div class="label">갤러리</div></div>
+    </div>
+  </div>
+  <div class="redcircle" style="width:50px;height:50px;top:100px;left:9px;"></div>
+</div></div>
+
+</body>
+</html>
