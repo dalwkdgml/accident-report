@@ -146,7 +146,6 @@ async function loadApprovalRequests() {
           <button type="button" class="reject" data-user-id="${user.id}" data-status="rejected">거절</button>
         </div>
       </div>`).join('');
-    $approvalPanel.classList.add('open');
     $approvalList.querySelectorAll('[data-user-id]').forEach(button => {
       button.addEventListener('click', async () => {
         button.disabled = true;
