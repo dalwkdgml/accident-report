@@ -74,10 +74,6 @@ const $signupForm = document.getElementById('signupForm');
 const $signupError = document.getElementById('signupError');
 const $signupButton = document.getElementById('signupButton');
 const $approvalPanel = document.getElementById('approvalPanel');
-if ($authToggle) {
-  $authToggle.hidden = true;
-  $authToggle.disabled = true;
-}
 const $approvalList = document.getElementById('approvalList');
 const $approvalButton = document.getElementById('approvalButton');
 const $approvalCount = document.getElementById('approvalCount');
@@ -200,6 +196,7 @@ $loginForm.addEventListener('submit', async (ev) => {
       enableNotifications();
       await router();
       connectSSE();
+      loadApprovalRequests();
     }
   } catch (e) {
     $loginError.textContent = e.message;
@@ -238,7 +235,7 @@ $signupForm.addEventListener('submit', async (ev) => {
     });
     $signupForm.reset();
     $signupScreen.classList.remove('open');
-    $loginError.textContent = '회원가입이 완료되었습니다. 바로 로그인해주세요.';
+    $loginError.textContent = '회원가입 신청이 완료되었습니다. 관리자 승인 후 로그인할 수 있습니다.';
   } catch (e) {
     $signupError.textContent = e.message;
   } finally {

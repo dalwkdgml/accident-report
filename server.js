@@ -22,7 +22,7 @@ function initializeDatabase() {
       password_hash TEXT NOT NULL,
       password_salt TEXT NOT NULL,
       office_name TEXT DEFAULT '',
-      status TEXT DEFAULT 'approved',
+      status TEXT DEFAULT 'pending',
       approved_by TEXT DEFAULT '',
       approved_at TEXT,
       created_at TEXT NOT NULL
@@ -104,6 +104,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const APPROVER_USERNAME = process.env.APPROVER_USERNAME || ADMIN_USERNAME;
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 
@@ -133,6 +134,13 @@ function requireAuth(req, res, next) {
   res.status(401).json({ error: '로그인이 필요합니다.' });
 }
 
+function requireApprover(req, res, next) {
+  const username = req.user && req.user.username;
+  const isApprover = Boolean(username && (username === ADMIN_USERNAME || (APPROVER_USERNAME && username === APPROVER_USERNAME)));
+  if (isApprover) return next();
+  res.status(403).json({ error: '가입 승인 권한이 없습니다.' });
+}
+
 function hashPassword(password, salt) {
   return crypto.pbkdf2Sync(password, salt, 120000, 64, 'sha512').toString('hex');
 }
@@ -149,10 +157,8 @@ app.post('/api/auth/signup', (req, res) => {
     const stmt = db.prepare(
       'INSERT INTO users (username, password_hash, password_salt, office_name, status, created_at) VALUES (?, ?, ?, ?, ?, ?)'
     );
-    const result = stmt.run(username, hash, salt, office_name || '', 'approved', created_at);
-    const session = signSession({ username, expiresAt: Date.now() + SESSION_TTL_MS });
-    res.setHeader('Set-Cookie', `accident_session=${session}; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_TTL_MS / 1000}; Path=/`);
-    res.json({ username, office_name });
+    stmt.run(username, hash, salt, office_name || '', 'pending', created_at);
+    res.status(201).json({ username, office_name, status: 'pending' });
   } catch (error) {
     if (error.message.includes('UNIQUE')) {
       return res.status(409).json({ error: '이미 존재하는 아이디입니다.' });
@@ -169,11 +175,17 @@ app.post('/api/auth/login', (req, res) => {
   let valid = Boolean(ADMIN_USERNAME && ADMIN_PASSWORD && username === ADMIN_USERNAME && password === ADMIN_PASSWORD);
   if (!valid) {
     try {
-      const stmt = db.prepare('SELECT password_hash, password_salt, office_name FROM users WHERE username = ?');
+      const stmt = db.prepare('SELECT password_hash, password_salt, office_name, status FROM users WHERE username = ?');
       const user = stmt.get(username);
       if (user) {
         const actual = hashPassword(password || '', user.password_salt);
-        valid = crypto.timingSafeEqual(Buffer.from(actual), Buffer.from(user.password_hash));
+        const passwordMatches = crypto.timingSafeEqual(Buffer.from(actual), Buffer.from(user.password_hash));
+        if (passwordMatches) {
+          if (user.status !== 'approved') {
+            return res.status(403).json({ error: '가입 승인 대기 중입니다. 관리자 승인 후 로그인해주세요.' });
+          }
+          valid = true;
+        }
       }
     } catch (e) {
       console.error('로그인 오류:', e);
@@ -187,12 +199,35 @@ app.post('/api/auth/login', (req, res) => {
   res.json({ username });
 });
 
-app.get('/api/auth/pending-users', requireAuth, (req, res) => {
-  return res.status(403).json({ error: '가입 승인 기능이 비활성화되었습니다.' });
+app.get('/api/auth/pending-users', requireAuth, requireApprover, (req, res) => {
+  try {
+    const stmt = db.prepare("SELECT id, username, office_name, created_at FROM users WHERE status = 'pending' ORDER BY id");
+    res.json(stmt.all());
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-app.patch('/api/auth/users/:id/status', requireAuth, (req, res) => {
-  return res.status(403).json({ error: '가입 승인 기능이 비활성화되었습니다.' });
+app.patch('/api/auth/users/:id/status', requireAuth, requireApprover, (req, res) => {
+  const id = parseInt(req.params.id);
+  const { status } = req.body || {};
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: '잘못된 상태값입니다.' });
+  }
+  try {
+    if (status === 'rejected') {
+      const result = db.prepare("DELETE FROM users WHERE id = ? AND status = 'pending'").run(id);
+      if (result.changes === 0) return res.status(404).json({ error: '대기 중인 신청을 찾을 수 없습니다.' });
+    } else {
+      const approved_at = new Date().toISOString();
+      const result = db.prepare("UPDATE users SET status = 'approved', approved_by = ?, approved_at = ? WHERE id = ? AND status = 'pending'")
+        .run(req.user.username, approved_at, id);
+      if (result.changes === 0) return res.status(404).json({ error: '대기 중인 신청을 찾을 수 없습니다.' });
+    }
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 app.post('/api/auth/logout', (req, res) => {
