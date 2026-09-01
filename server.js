@@ -60,7 +60,27 @@ function hashPassword(password, salt) {
 }
 
 app.post('/api/auth/signup', async (req, res) => {
-  return res.status(403).json({ error: '회원가입 기능이 비활성화되었습니다. 관리자 계정으로 로그인해주세요.' });
+  const { username, password, office_name } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ error: '아이디와 비밀번호를 입력해주세요.' });
+  }
+  try {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = hashPassword(password, salt);
+    const created_at = new Date().toISOString();
+    const { rows } = await pool.query(
+      'INSERT INTO users (username, password_hash, password_salt, office_name, status, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, office_name',
+      [username, hash, salt, office_name || '', 'approved', created_at]
+    );
+    const session = signSession({ username, expiresAt: Date.now() + SESSION_TTL_MS });
+    res.setHeader('Set-Cookie', `accident_session=${session}; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_TTL_MS / 1000}; Path=/`);
+    res.json({ username: rows[0].username, office_name: rows[0].office_name });
+  } catch (error) {
+    if (error.message.includes('duplicate key')) {
+      return res.status(409).json({ error: '이미 존재하는 아이디입니다.' });
+    }
+    return res.status(500).json({ error: '회원가입에 실패했습니다.' });
+  }
 });
 
 app.post('/api/auth/login', async (req, res) => {
