@@ -14,6 +14,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
+pool.on('error', (err) => {
+  console.error('Unexpected idle PG client error (pool kept alive):', err);
+});
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
