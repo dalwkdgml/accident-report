@@ -194,40 +194,41 @@ const upload = multer({
   }
 });
 
-// Cloudflare R2 (S3 호환) 사진 저장소
-const r2 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+// Supabase Storage (S3 호환) 사진 저장소
+const photoStore = new S3Client({
+  region: process.env.SUPABASE_S3_REGION,
+  endpoint: process.env.SUPABASE_S3_ENDPOINT,
+  forcePathStyle: true,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.SUPABASE_S3_SECRET_ACCESS_KEY,
   },
 });
-const R2_BUCKET = process.env.R2_BUCKET;
-const R2_PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
+const PHOTO_BUCKET = process.env.SUPABASE_STORAGE_BUCKET;
+const PHOTO_PUBLIC_URL = (process.env.SUPABASE_STORAGE_PUBLIC_URL || '').replace(/\/$/, '');
 
 async function uploadPhotos(files) {
   return Promise.all((files || []).map(async (file) => {
     const ext = path.extname(file.originalname);
     const key = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    await r2.send(new PutObjectCommand({
-      Bucket: R2_BUCKET,
+    await photoStore.send(new PutObjectCommand({
+      Bucket: PHOTO_BUCKET,
       Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
     }));
-    return `${R2_PUBLIC_URL}/${key}`;
+    return `${PHOTO_PUBLIC_URL}/${key}`;
   }));
 }
 
 async function deletePhotos(urls) {
   await Promise.all((urls || []).map(async (url) => {
-    const key = url.startsWith(R2_PUBLIC_URL) ? url.slice(R2_PUBLIC_URL.length + 1) : null;
+    const key = url.startsWith(PHOTO_PUBLIC_URL) ? url.slice(PHOTO_PUBLIC_URL.length + 1) : null;
     if (!key) return;
     try {
-      await r2.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key }));
+      await photoStore.send(new DeleteObjectCommand({ Bucket: PHOTO_BUCKET, Key: key }));
     } catch (err) {
-      console.error('R2 삭제 실패:', key, err.message);
+      console.error('사진 삭제 실패:', key, err.message);
     }
   }));
 }
