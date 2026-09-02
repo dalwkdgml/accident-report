@@ -78,6 +78,15 @@ CREATE TABLE IF NOT EXISTS weekly_inspections (
 );
 CREATE INDEX IF NOT EXISTS idx_weekly_inspections_branch ON weekly_inspections(branch_name);
 
+-- 웹 푸시 구독 (앱을 닫아도 알림 수신)
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id SERIAL PRIMARY KEY,
+  endpoint TEXT NOT NULL UNIQUE,
+  p256dh TEXT NOT NULL,
+  auth TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
 -- 안전보건협의체 (월례 회의록)
 CREATE TABLE IF NOT EXISTS safety_meetings (
   id SERIAL PRIMARY KEY,

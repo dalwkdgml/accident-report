@@ -99,6 +99,33 @@ function updateNotificationButton() {
   $notificationButton.disabled = Notification.permission === 'granted';
 }
 
+function urlBase64ToUint8Array(base64) {
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+  const raw = atob((base64 + padding).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function subscribeToPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      const { key } = await api('/push/vapid-public-key');
+      if (!key) return;
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(key),
+      });
+    }
+    await api('/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(subscription),
+    });
+  } catch (e) { console.error('push subscribe failed:', e); }
+}
+
 async function enableNotifications() {
   if (!('Notification' in window)) {
     toast('이 브라우저는 알림을 지원하지 않습니다.', true);
@@ -106,8 +133,12 @@ async function enableNotifications() {
   }
   const permission = await Notification.requestPermission();
   updateNotificationButton();
-  if (permission === 'granted') toast('알림을 켰습니다.');
-  else toast('브라우저 설정에서 알림 권한을 허용해주세요.', true);
+  if (permission === 'granted') {
+    toast('알림을 켰습니다.');
+    subscribeToPush();
+  } else {
+    toast('브라우저 설정에서 알림 권한을 허용해주세요.', true);
+  }
 }
 
 async function notifyNewAccident(accident) {
@@ -1609,6 +1640,7 @@ async function initializeApp() {
     await api('/auth/me');
     hideLogin();
     updateNotificationButton();
+    if ('Notification' in window && Notification.permission === 'granted') subscribeToPush();
     await router();
     connectSSE();
     loadApprovalRequests();

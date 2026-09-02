@@ -6,6 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { Pool } = require('pg');
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const webpush = require('web-push');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,6 +31,31 @@ const APPROVER_USERNAMES = (process.env.APPROVER_USERNAME || ADMIN_ACCOUNTS.map(
   .split(',').map(s => s.trim()).filter(Boolean);
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
+if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails('mailto:admin@tollpass365.local', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+}
+
+async function sendPush(payload) {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return;
+  const { rows } = await pool.query('SELECT id, endpoint, p256dh, auth FROM push_subscriptions');
+  await Promise.all(rows.map(async (sub) => {
+    try {
+      await webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        JSON.stringify(payload)
+      );
+    } catch (err) {
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        await pool.query('DELETE FROM push_subscriptions WHERE id = $1', [sub.id]);
+      } else {
+        console.error('web-push send failed:', err.message);
+      }
+    }
+  }));
+}
 
 function signSession(payload) {
   const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
@@ -276,6 +302,30 @@ app.get('/api/stats', async (req, res) => {
   });
 });
 
+// 웹 푸시 구독
+app.get('/api/push/vapid-public-key', (req, res) => {
+  res.json({ key: VAPID_PUBLIC_KEY });
+});
+
+app.post('/api/push/subscribe', requireAuth, async (req, res) => {
+  const sub = req.body || {};
+  if (!sub.endpoint || !sub.keys || !sub.keys.p256dh || !sub.keys.auth) {
+    return res.status(400).json({ error: '잘못된 구독 정보입니다.' });
+  }
+  await pool.query(
+    `INSERT INTO push_subscriptions (endpoint, p256dh, auth, created_at) VALUES ($1,$2,$3,$4)
+     ON CONFLICT (endpoint) DO UPDATE SET p256dh = $2, auth = $3`,
+    [sub.endpoint, sub.keys.p256dh, sub.keys.auth, nowKST()]
+  );
+  res.status(204).end();
+});
+
+app.post('/api/push/unsubscribe', requireAuth, async (req, res) => {
+  const { endpoint } = req.body || {};
+  if (endpoint) await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [endpoint]);
+  res.status(204).end();
+});
+
 // SSE clients
 let sseClients = [];
 function sendSSE(data) {
@@ -336,6 +386,12 @@ app.post('/api/accidents', upload.array('photos', 10), async (req, res) => {
   const newAccident = rows[0];
 
   sendSSE({ type: 'new_accident', accident: newAccident });
+  sendPush({
+    title: '새 사고가 등록되었습니다',
+    body: `${newAccident.location} · ${newAccident.accident_type}`,
+    url: `/#/accidents/${newAccident.id}`,
+    tag: `accident-${newAccident.id}`,
+  }).catch(err => console.error('push notify failed:', err.message));
   res.status(201).json(newAccident);
 });
 
