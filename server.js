@@ -22,9 +22,12 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
-const APPROVER_USERNAME = process.env.APPROVER_USERNAME || ADMIN_USERNAME;
+const ADMIN_ACCOUNTS = [
+  { username: process.env.ADMIN_USERNAME || '', password: process.env.ADMIN_PASSWORD || '' },
+  { username: process.env.ADMIN_USERNAME_2 || '', password: process.env.ADMIN_PASSWORD_2 || '' },
+].filter(a => a.username && a.password);
+const APPROVER_USERNAMES = (process.env.APPROVER_USERNAME || ADMIN_ACCOUNTS.map(a => a.username).join(','))
+  .split(',').map(s => s.trim()).filter(Boolean);
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 
@@ -55,7 +58,7 @@ function requireAuth(req, res, next) {
 }
 
 function requireApprover(req, res, next) {
-  if (req.user && req.user.username === APPROVER_USERNAME) return next();
+  if (req.user && APPROVER_USERNAMES.includes(req.user.username)) return next();
   res.status(403).json({ error: '가입 승인 권한이 없습니다.' });
 }
 
@@ -93,7 +96,7 @@ app.post('/api/auth/login', async (req, res) => {
   if (!SESSION_SECRET) {
     return res.status(503).json({ error: '로그인 설정이 완료되지 않았습니다.' });
   }
-  let valid = Boolean(ADMIN_USERNAME && ADMIN_PASSWORD && username === ADMIN_USERNAME && password === ADMIN_PASSWORD);
+  let valid = ADMIN_ACCOUNTS.some(a => username === a.username && password === a.password);
   if (!valid) {
     const { rows } = await pool.query('SELECT password_hash, password_salt, office_name, status FROM users WHERE username = $1', [username]);
     if (rows[0]) {
