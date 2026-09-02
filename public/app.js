@@ -271,10 +271,12 @@ $signupForm.addEventListener('submit', async (ev) => {
   }
 });
 
-document.getElementById('logoutButton').addEventListener('click', async () => {
+async function doLogout() {
   try { await api('/auth/logout', { method: 'POST' }); } catch (e) {}
   showLogin();
-});
+}
+document.getElementById('logoutButton').addEventListener('click', doLogout);
+document.getElementById('logoutButtonMobile').addEventListener('click', doLogout);
 function fmtDate(s) { return s || '-'; }
 
 function printAccidentReport(accident) {
@@ -1637,8 +1639,10 @@ function connectSSE() {
 // ---------- init ----------
 async function initializeApp() {
   try {
-    await api('/auth/me');
+    const me = await api('/auth/me');
     hideLogin();
+    document.querySelector('.user-name').textContent = me.username;
+    document.getElementById('mobileAccountName').textContent = me.username;
     updateNotificationButton();
     if ('Notification' in window && Notification.permission === 'granted') subscribeToPush();
     await router();

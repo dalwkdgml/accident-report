@@ -172,6 +172,9 @@ button { font-family: inherit; cursor: pointer; }
 .notification-btn { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-muted); font-size: 12px; cursor: pointer; }
 .notification-btn:hover { border-color: var(--indigo); color: var(--indigo); }
 .notification-btn:disabled { cursor: default; color: #16834b; border-color: #b7dec9; background: #f1faf5; }
+.mobile-account { display: none; align-items: center; gap: 8px; }
+.mobile-account-name { font-size: 12.5px; font-weight: 700; color: var(--text-muted); }
+.mobile-logout-btn { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-muted); font-size: 12px; cursor: pointer; }
 .topbar-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .ex-badge {
   display: inline-flex; align-items: center; justify-content: center;
@@ -620,6 +623,8 @@ tr.clickable:hover { background: #fafafe; cursor: pointer; }
   .breadcrumb { font-size: 15px; }
   .breadcrumb .muted { display: none; }
   #openRegisterModal { display: none; }
+  .topbar-actions { flex-wrap: wrap; justify-content: flex-end; row-gap: 6px; }
+  .mobile-account { display: flex; }
   .subtab-bar { display: flex; }
 
   .stat-grid, .analytics-grid {
